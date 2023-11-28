@@ -2,11 +2,11 @@
 
 - [WSGI - Web Server Gateways Interface](https://peps.python.org/pep-3333/)
   - want or want not?
-- msgpack
-  - `pip install inifini[msgpack]`
 - better-exceptions
   - `pip install inifini[development]`
     - server and frontend reloading here?
+- msgpack
+  - `pip install inifini[msgpack]`
 
 # Minification (html/css/js)
 
