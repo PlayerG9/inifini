@@ -26,6 +26,10 @@ def dunno():
 <div><h1>Hello World</h1></div>
 ```
 
+# Templating
+
+- `pip install inifini[jinja]`
+
 # Builtin support to be used as an API
 
 ```python
@@ -49,6 +53,27 @@ Made in mind with integration for background-threads and workers
 
 livereload? or custom
 
-# Templating
 
-- `pip install inifini[jinja]`
+# Notes
+
+## Json serialization/deserialization
+- orjson
+- ujson
+- json (builtin)
+
+
+# Interfaces
+
+```python
+class Router:
+    def mount_router(self, router: 'Router', prefix: str = None): ...
+    def mount_wsgi(self, wsgi_app, prefix: str = None): ...
+    def mount_asgi(self, asgi_app, prefix: str = None): ...
+    
+    def route(self, method: str, endpoint: str): ...
+    def GET(self, endpoint: str): ...
+    def POST(self, endpoint: str): ...
+    def HEAD(self, endpoint: str): ...
+    def PUT(self, endpoint: str): ...
+    def DELETE(self, endpoint: str): ...
+```
