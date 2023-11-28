@@ -1,5 +1,5 @@
 <h1 style="text-align: center">
-    <img src="https://github.com/utility-libraries/configlib-py/raw/main/README.assets/inifini.svg" alt="inifini" style="height: 32px" />
+    <img src="https://github.com/PlayerG9/inifini/raw/main/README.assets/inifini.svg" alt="inifini" style="height: 32px" />
     <span style="color: #a07440">inifini</span>
 </h1>
 
