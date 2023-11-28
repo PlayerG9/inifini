@@ -1,6 +1,9 @@
-# inifini
-[![PyPI - Version](https://img.shields.io/pypi/v/inifini)
-](https://pypi.org/project/inifini/)
+<h1 style="text-align: center">
+    <img src="https://github.com/utility-libraries/configlib-py/raw/main/README.assets/inifini.svg" alt="inifini" style="height: 32px" />
+    <span style="color: #a07440">inifini</span>
+</h1>
+
+[![PyPI - Version](https://img.shields.io/pypi/v/inifini)](https://pypi.org/project/inifini/)
 
 A Python multipurpose framework for building any web-server
 
