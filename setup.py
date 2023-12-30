@@ -10,9 +10,16 @@ from inifini import __author__, __version__, __description__, __license__
 
 install_requires = []
 
-development_requires = ["better-exceptions"]
-all_requires = [development_requires]
+orjson_requires = ["orjson"]
+ujson_requires = ["ujson"]
+msgpack_requires = ["msgpack"]
+development_requires = ["better-exceptions", "jurigged"]
+all_requires = [orjson_requires, msgpack_requires, development_requires]
 extras_require = {
+    'orjson': orjson_requires,
+    'ujson': ujson_requires,
+    'msgpack': msgpack_requires,
+    'dev': development_requires,
     'development': development_requires,
     'all': all_requires,
 }

@@ -33,3 +33,7 @@ __status__ = "Prototype"  # Prototype, Development, Production
 __description__ = "A Python multipurpose framework for building any web-server"
 __version_info__ = (0, 0, 0)
 __version__ = '.'.join(map(str, __version_info__))
+
+from . import core
+from . import middleware
+from . import responses
