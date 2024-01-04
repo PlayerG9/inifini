@@ -95,6 +95,12 @@ class WebsocketMessage:
 
     # ----------------------------------------------------------------------- #
 
+    def to_bytes(self) -> bytes:
+        import io
+        stream = io.BytesIO()
+        self.write_stream(stream)
+        return stream.getvalue()
+
     def write_stream(self, stream: t.BinaryIO, *, masked: bool = False):
         extended_payload: bytes = b''
         length: int = self.length
@@ -121,7 +127,12 @@ class WebsocketMessage:
         stream.write(body)
 
     @classmethod
-    def from_stream(cls, stream: t.BinaryIO):
+    def from_bytes(cls, data: bytes) -> 'WebsocketMessage':
+        import io
+        return cls.from_stream(io.BytesIO(data))
+
+    @classmethod
+    def from_stream(cls, stream: t.BinaryIO) -> 'WebsocketMessage':
         h1 = int.from_bytes(stream.read(1), byteorder='big', signed=False)
         opcode = h1 & 0b00001111
         h2 = int.from_bytes(stream.read(1), byteorder='big', signed=False)
