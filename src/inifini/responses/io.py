@@ -4,7 +4,7 @@ r"""
 """
 import os
 import typing as t
-from io import UnsupportedOperation
+from io import UnsupportedOperation, DEFAULT_BUFFER_SIZE
 from ._base import ResponseBase
 from ._kit import RangeSupport
 
@@ -17,7 +17,7 @@ class IOResponse(ResponseBase, RangeSupport):
         if not stream.readable():
             raise UnsupportedOperation("not readable")
         self._stream = stream
-        self._blksize = 8192 if blksize == 1 else blksize
+        self._blksize = DEFAULT_BUFFER_SIZE if blksize == 1 else blksize
         self.auto_close = auto_close
 
     def __del__(self):
@@ -36,7 +36,7 @@ class IOResponse(ResponseBase, RangeSupport):
     # @cgi.util.FileWrapper inspired
 
     def __iter__(self):
-        if self._blksize is None:
+        if self._blksize:
             yield from self._stream  # yield lines or so
         else:
             return self  # use __next__
