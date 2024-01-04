@@ -2,5 +2,5 @@
 r"""
 
 """
-from .app import App
+from .app import Application
 from . import servers
