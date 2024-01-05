@@ -16,3 +16,8 @@ try:
     import msgpack
 except ModuleNotFoundError:
     msgpack = None
+
+try:
+    from better_exceptions import format_exception
+except ModuleNotFoundError:
+    from traceback import format_exception
