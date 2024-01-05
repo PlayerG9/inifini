@@ -1,6 +1,18 @@
 # -*- coding=utf-8 -*-
 r"""
+def endpoint(websocket: WebsocketHandler):
+    @websocket.on_text()
+    def on_text(text: str):
+        logging.info(f"Received: {text!r}")
 
+    websocket.loop()
+
+def endpoint(websocket: WebsocketHandler):
+    while not websocket.closed:
+        msg = websocket.receive_json()
+        logging.info(f"Received Event: {msg['event']!r}")
+        response = EVENT_HANDLER[msg['event']](msg)
+        websocket.send_json(response)
 """
 import typing as t
 from ..._libs import json
@@ -13,7 +25,6 @@ _CB_BINARY = t.Callable[[bytes], None]  # (binary) -> None
 _CB_MESSAGE = t.Callable[[t.AnyStr], None]  # (message) -> None
 _CB_CLOSE = t.Callable[[str], None]  # (reason) -> None
 _CB_CONTINUE = t.Callable[[], None]  # () -> None
-_CB_FINALLY = t.Callable[[t.Optional[Exception]], None]  # ([exc]) -> None
 
 
 class WebsocketHandler:
@@ -26,7 +37,6 @@ class WebsocketHandler:
         self._on_message: t.List[_CB_MESSAGE] = []
         self._on_close: t.List[_CB_CLOSE] = []
         self._on_continue: t.List[_CB_CONTINUE] = []
-        self._on_finally: t.List[_CB_FINALLY] = []
 
     @property
     def closed(self):
@@ -49,12 +59,17 @@ class WebsocketHandler:
         return WebsocketMessage.from_stream(stream=self._rfile)
 
     def receive_json(self) -> t.Any:
+        message = self.receive()
+        if not message.is_text or message.is_binary:
+            raise RuntimeError("Can't load received message to json")
+        # todo: this function is to be used by the user and should be able to respond to close or ping
         # todo: JsonDecodeError raises custom error class which sends WSStatus.CLOSE_PROTOCOL_ERROR or so
-        return json.loads(self.receive().body)
+        return json.loads(message.body)
 
     def close(self, reason: t.Union[str, int, WSStatus] = WSStatus.CLOSE_NORMAL, *, call_self: bool = False):
         if self._closed:
-            raise RuntimeError("Connection was already closed")
+            return
+            # raise RuntimeError("Connection was already closed")
         reason = reason if isinstance(reason, str) else WSStatus(reason).phrase
         self._wfile.write(WebsocketMessage(reason, opcode=WSOPCode.CLOSE).to_bytes())
         self._closed = True
@@ -62,13 +77,17 @@ class WebsocketHandler:
             for cb in self._on_close:
                 cb(reason)
 
+    def close_fatally(self):
+        self._wfile.write(WebsocketMessage(WSStatus.SERVER_ERROR.phrase, opcode=WSOPCode.CLOSE).to_bytes())
+        self._closed = True
+
     def _send_pong(self) -> None:
         if self._closed:
             raise RuntimeError("Connection was already closed")
         message = WebsocketMessage(b'', opcode=WSOPCode.PONG)
         self._wfile.write(message.to_bytes())  # todo: cache these bytes!?
 
-    def _loop(self):
+    def loop(self, *, close_on_exception: bool = True):
         try:
             while not self._closed:
                 message = self.receive()
@@ -91,14 +110,10 @@ class WebsocketHandler:
                         cb()
                 elif message.is_ping:
                     self._send_pong()
-        except Exception as exception:
-            self._wfile.write(WebsocketMessage(WSStatus.SERVER_ERROR.phrase, opcode=WSOPCode.CLOSE).to_bytes())
-            self._closed = True
-            for cb in self._on_finally:
-                cb(exception)
-        else:
-            for cb in self._on_finally:
-                cb(None)
+        except Exception:
+            if close_on_exception:
+                self.close_fatally()
+            raise
 
     @t.overload
     def on_text(self) -> t.Callable[[_CB_TEXT], _CB_TEXT]: ...
@@ -152,16 +167,5 @@ class WebsocketHandler:
     def on_continue(self, _fn=None):
         def decorator(fn):
             self._on_continue.append(fn)
-            return fn
-        return decorator(_fn) if _fn is not None else decorator
-
-    @t.overload
-    def on_finally(self) -> t.Callable[[_CB_FINALLY], _CB_FINALLY]: ...
-    @t.overload
-    def on_finally(self, fn: _CB_FINALLY) -> _CB_FINALLY: ...
-
-    def on_finally(self, _fn=None):
-        def decorator(fn):
-            self._on_finally.append(fn)
             return fn
         return decorator(_fn) if _fn is not None else decorator
