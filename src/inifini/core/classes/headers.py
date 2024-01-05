@@ -4,6 +4,7 @@ r"""
 """
 import typing as t
 import collections.abc
+# from wsgiref.headers import Headers
 
 
 HeadersInit = t.Union['Headers', t.List[t.Tuple[str, str]], t.Dict[str, str]]
@@ -17,7 +18,8 @@ class Headers:
         self.update(init)
         self.update(headers)
 
-    def add_header(self, key: str, value: t.Any):
+    # todo: add support for there _params
+    def add_header(self, key: str, value: t.Any, **_params):
         self._headers.append((key, str(value)))
 
     def replace(self, key: str, value: t.Any):
