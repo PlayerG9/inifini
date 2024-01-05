@@ -9,6 +9,7 @@
       - jurigged
       - limeade
       - reloading
+      - python-hmr
 - msgpack
   - `pip install inifini[msgpack]`
 - scheduling
