@@ -150,3 +150,18 @@ import inifini
 app = inifini.Application()
 app.load_routes("@views")
 ```
+
+
+# Dev Notes
+
+```python
+import cgi
+cgi.parse_header()
+cgi.parse_multipart()
+cgi.parse_qs()
+cgi.parse_qsl()
+import wsgiref.simple_server
+wsgiref.simple_server.make_server()
+import wsgiref.validate
+wsgiref.validate.validator()
+```
