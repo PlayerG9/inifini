@@ -2,6 +2,8 @@
 r"""
 
 """
+# get the fastest available json library with builtin-json as fallback
+# orjson > ujson > json
 try:
     import orjson as json
 except ModuleNotFoundError:
@@ -13,4 +15,4 @@ except ModuleNotFoundError:
 try:
     import msgpack
 except ModuleNotFoundError:
-    pass
+    msgpack = None
