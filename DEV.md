@@ -5,6 +5,10 @@
 - better-exceptions
   - `pip install inifini[development]`
     - server and frontend reloading here?
+    - reloading packages:
+      - jurigged
+      - limeade
+      - reloading
 - msgpack
   - `pip install inifini[msgpack]`
 - scheduling
