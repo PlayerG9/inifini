@@ -12,13 +12,21 @@ START_RESPONSE = t.Callable[[str, t.Iterable[t.Tuple[str, str]]], None]
 
 
 class Application:
+    _endpoint = lambda: "Hello Endpoint"
+
     def __call__(self, environ: dict, start_response: START_RESPONSE):
         return self.wsgi_app(environ, start_response)
 
     def wsgi_app(self, environ: dict, start_response: t.Callable) -> t.Any:
-        message = "Hello World!"
+        message = self._endpoint()
         start_response("200 OK", [("Content-Type", "text/plain"), ("Content-Length", len(message))])
         yield message
+
+    def get(self):
+        def decorator(fn):
+            self._endpoint = fn
+            return fn
+        return decorator
 
     _scheduler: 'schedule.Scheduler' = None
 
